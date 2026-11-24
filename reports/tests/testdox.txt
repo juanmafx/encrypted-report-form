@@ -1,0 +1,103 @@
+Admin Access (Fang\Tests\Integration\AdminAccess)
+ [x] Anonymous visitor is redirected
+ [x] Anonymous visitor cannot read a report
+ [x] Password alone does not grant access
+ [x] Wrong password is rejected generically
+ [x] Full sign in grants access and regenerates session
+ [x] Wrong totp code is rejected
+ [x] Totp code cannot be replayed
+ [x] Totp attempts are rate limited
+ [x] Login attempts are rate limited
+ [x] Pending two factor expires
+ [x] Idle session expires
+ [x] Absolute session lifetime is enforced
+ [x] Admin reads decrypted and escaped report
+ [x] Delete requires csrf token
+ [x] Admin can delete a report
+ [x] Anonymous visitor cannot delete
+ [x] Logout ends the session
+ [x] Totp secret is encrypted at rest
+
+App Config (Fang\Tests\Unit\AppConfig)
+ [x] Secure cookies are the default
+ [x] Rejects missing key
+ [x] Rejects short key
+ [x] Rejects invalid recipient
+
+Data Cipher (Fang\Tests\Unit\DataCipher)
+ [x] Round trip preserves plaintext
+ [x] Each encryption uses a fresh nonce
+ [x] Ciphertext cannot move to another context
+ [x] Tampered ciphertext is rejected
+ [x] Wrong key is rejected
+ [x] Malformed input is rejected
+ [x] Unknown version is rejected
+
+Http Flow (Fang\Tests\EndToEnd\HttpFlow)
+ [x] Complete submission and admin journey
+ [x] Stylesheet is served without reaching the application
+ [x] Backend source is not reachable over http
+
+Password Hasher (Fang\Tests\Unit\PasswordHasher)
+ [x] Uses argon 2id
+ [x] Default parameters meet the documented cost
+ [x] Salt makes hashes unique
+ [x] Verifies only the correct password
+ [x] Rejects short passwords
+ [x] Overlong password fails verification
+ [x] Detects outdated parameters
+
+Rate Limiter (Fang\Tests\Unit\RateLimiter)
+ [x] Blocks after the limit
+ [x] Window resets
+ [x] Scopes and identifiers are isolated
+ [x] Identifiers are not stored in clear
+
+Report Submission (Fang\Tests\Integration\ReportSubmission)
+ [x] Form renders with csrf token and security headers
+ [x] Page loads no third party assets
+ [x] Valid submission is stored encrypted
+ [x] Missing csrf token is rejected
+ [x] Wrong csrf token is rejected
+ [x] Array csrf token is rejected
+ [x] Invalid submission redisplays escaped values
+ [x] Header injection never reaches the mailer
+ [x] Notification carries no submitted data
+ [x] Mail failure does not lose the report
+ [x] Sql injection payload is stored as data
+ [x] Submissions are rate limited per client
+ [x] Oversized body is rejected
+ [x] Unknown route and method are handled
+
+Report Validator (Fang\Tests\Unit\ReportValidator)
+ [x] Accepts a valid report
+ [x] Rejects invalid field with data set "email header injection"
+ [x] Rejects invalid field with data set "email newline injection"
+ [x] Rejects invalid field with data set "malformed email"
+ [x] Rejects invalid field with data set "missing email"
+ [x] Rejects invalid field with data set "oversized email"
+ [x] Rejects invalid field with data set "array parameter"
+ [x] Rejects invalid field with data set "newline in single-line field"
+ [x] Rejects invalid field with data set "null byte"
+ [x] Rejects invalid field with data set "invalid utf-8"
+ [x] Rejects invalid field with data set "oversized comment"
+ [x] Rejects invalid field with data set "missing first name"
+ [x] Rejects invalid field with data set "unexpected fang value"
+ [x] Rejects invalid field with data set "array fang value"
+ [x] Keeps newlines in multi line fields
+ [x] Counts characters not bytes
+
+Totp Service (Fang\Tests\Unit\TotpService)
+ [x] Matches rfc 6238 vectors with data set "time 59"
+ [x] Matches rfc 6238 vectors with data set "time 1111111109"
+ [x] Matches rfc 6238 vectors with data set "time 1234567890"
+ [x] Matches rfc 6238 vectors with data set "time 2000000000"
+ [x] Accepts one step of drift
+ [x] Rejects codes outside the drift window
+ [x] Rejects malformed codes with data set #0
+ [x] Rejects malformed codes with data set #1
+ [x] Rejects malformed codes with data set #2
+ [x] Rejects malformed codes with data set #3
+ [x] Rejects malformed codes with data set #4
+ [x] Provisioning uri identifies the issuer
+

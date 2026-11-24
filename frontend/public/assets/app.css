@@ -1,0 +1,15 @@
+:root { color-scheme: light dark; --accent: #3b6df0; --danger: #c62828; --border: #8886; }
+* { box-sizing: border-box; }
+body { margin: 0; font: 16px/1.6 system-ui, sans-serif; }
+main { max-width: 44rem; margin: 0 auto; padding: 2rem 1rem; }
+label, legend { display: block; font-weight: 600; margin-top: 1rem; }
+input[type=text], input[type=email], input[type=password], textarea { width: 100%; padding: .5rem; border: 1px solid var(--border); border-radius: .375rem; font: inherit; }
+fieldset { border: 0; padding: 0; margin: 0; }
+fieldset label { display: inline-block; font-weight: 400; margin: 0 1rem 0 0; }
+button { margin-top: 1.25rem; padding: .55rem 1.1rem; border: 0; border-radius: .375rem; background: var(--accent); color: #fff; font: inherit; cursor: pointer; }
+button.danger { background: var(--danger); }
+.error { color: var(--danger); margin: .25rem 0 0; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: .5rem; border-bottom: 1px solid var(--border); }
+dt { font-weight: 600; margin-top: .75rem; }
+dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }

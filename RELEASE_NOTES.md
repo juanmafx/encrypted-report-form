@@ -1,20 +1,19 @@
-# Fang 1.0.0 Release Notes
+# Fang 1.0.1 Release Notes
 
-**Status:** prepared, not tagged or published.
+Released 2026-11-24.
 
-Version 1.0.0 is a full rewrite of the 2013 form as a small, security-focused PHP 8.4+ application. Reports are encrypted before storage and can be read only through an admin area protected by Argon2id passwords and TOTP.
+This is a documentation-only patch release. There is no code behaviour change from 1.0.0.
 
-## Highlights
+## Changes
 
-- Separated `frontend/` and `backend/` structure.
-- Authenticated encryption of stored personal data.
-- CSRF protection, rate limiting, strict validation, and mail header injection protection.
-- Automated tests with a committed report in `reports/tests/`.
+- The changelog and release notes now record 1.0.0 as released on 2026-11-24.
+- The security audit marks the git history exposure (F-08, O-01) as resolved by the 2026-11-24 history rewrite, which kept only the 2026 modernization commits. Anything that was ever published should still be treated as exposed.
+- The security audit records that the CI workflow ran and passed after publication.
 
 ## Upgrade notes
 
-The original version stored nothing, so there is no data to migrate. Configure the environment variables, run `db:migrate`, create an admin with `admin:create`, and point the web root at `frontend/public`. Links to `index.php` or `report.php` must be updated.
+No migration is needed from 1.0.0.
 
 ## Known limitations
 
-See [SECURITY.md](SECURITY.md). Personal email addresses from the original code and commit metadata remain in git history until the owner decides otherwise.
+See [SECURITY.md](SECURITY.md).

@@ -1,6 +1,6 @@
 # Security Audit
 
-**Date:** 2026-11-23. **Scope:** all tracked files and the five commits of history on `master`. **Type:** source review plus automated tests. This was not an independent penetration test.
+**Date:** 2026-11-23. **Scope:** all tracked files and the five commits of history on `master` at the time of the audit. **Type:** source review plus automated tests. This was not an independent penetration test.
 
 ## Findings in the original code
 
@@ -13,7 +13,7 @@
 | F-05 | Medium | No rate limiting, enabling mail abuse | Fixed |
 | F-06 | Medium | Stylesheet and script loaded over plain HTTP from a third-party host | Fixed: assets are self-hosted |
 | F-07 | Medium | End-of-life jQuery 1.10 | Fixed: removed |
-| F-08 | Medium | Personal email address hardcoded in source (masked: `j***@h***.com`) | Removed from the tree. **Open in git history** |
+| F-08 | Medium | Personal email address hardcoded in source (masked: `j***@h***.com`) | Removed from the tree. Resolved in history by the 2026-11-24 history rewrite |
 | F-09 | Low | Reliance on short open tags and undefined variables | Fixed: rewritten |
 
 ## Findings from the follow-up review
@@ -29,6 +29,12 @@
 | R-07 | Low | The `X-Powered-By` header disclosed the PHP version | Fixed |
 | R-08 | Low | The mailer DSN, which can hold SMTP credentials, was not marked as a sensitive parameter | Fixed |
 
+## Resolved after the audit
+
+| ID | Severity | Item | Resolution |
+| --- | --- | --- | --- |
+| O-01 | Low | Personal email addresses were in the published git history, in the original source and in commit author metadata | Resolved on 2026-11-24: the published history was rewritten to keep only the 2026 modernization commits, authored with a GitHub noreply address. Old commits may stay reachable by direct SHA until GitHub purges unreferenced objects, so treat anything that was ever published as exposed |
+
 ## Controls added
 
 Argon2id password hashing, TOTP two-factor authentication with replay protection, XChaCha20-Poly1305 field encryption, hardened sessions, rate limiting, security headers, and a maintained mail library. See [SECURITY.md](../SECURITY.md).
@@ -37,7 +43,6 @@ Argon2id password hashing, TOTP two-factor authentication with replay protection
 
 | ID | Severity | Item | Required action |
 | --- | --- | --- | --- |
-| O-01 | Low | Personal email addresses remain in published git history, in the original source and in commit author metadata | Owner decides whether to rewrite history |
 | O-02 | Low | No key rotation or TOTP recovery flow | Add before handling real personal data |
 | O-03 | Low | Rate limits are per proxy when deployed behind a reverse proxy | Enforce limits at the proxy |
 | O-04 | Info | No license is declared and the scenario derives from a published book | Owner decides licensing |
@@ -50,4 +55,4 @@ Argon2id password hashing, TOTP two-factor authentication with replay protection
 - PHPStan level 8 on `backend/src`.
 - `composer audit` reported no known advisories on the audit date.
 - `gitleaks` with redaction reported two matches, both the public RFC 6238 test secret used as a test fixture.
-- The GitHub Actions workflow was written but has not run, because this branch has not been pushed.
+- The GitHub Actions workflow ran on `master` after publication on 2026-11-24 and passed.

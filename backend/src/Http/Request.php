@@ -32,6 +32,19 @@ final readonly class Request
         );
     }
 
+    public function rateLimitSubject(): string
+    {
+        if (filter_var($this->clientIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === false) {
+            return $this->clientIp;
+        }
+        $packed = (string) inet_pton($this->clientIp);
+        if (str_starts_with($packed, str_repeat("\0", 10) . "\xFF\xFF")) {
+            return (string) inet_ntop(substr($packed, 12));
+        }
+
+        return inet_ntop(substr($packed, 0, 8) . str_repeat("\0", 8)) . '/64';
+    }
+
     public function postString(string $key): string
     {
         $value = $this->post[$key] ?? '';

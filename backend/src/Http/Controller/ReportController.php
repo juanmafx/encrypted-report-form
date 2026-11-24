@@ -35,7 +35,7 @@ final readonly class ReportController
 
     public function submit(Request $request): Response
     {
-        if (!$this->rateLimiter->allow('report', $request->clientIp, self::SUBMISSION_LIMIT, self::SUBMISSION_WINDOW)) {
+        if (!$this->rateLimiter->allow('report', $request->rateLimitSubject(), self::SUBMISSION_LIMIT, self::SUBMISSION_WINDOW)) {
             return Response::html(
                 $this->renderer->page('error', 'Too many requests', ['message' => 'Too many submissions. Try again later.']),
                 429,

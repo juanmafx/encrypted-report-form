@@ -55,9 +55,9 @@ final readonly class AdminController
     public function login(Request $request): Response
     {
         $username = trim($request->postString('username'));
-        $allowedByIp = $this->rateLimiter->allow('login-ip', $request->clientIp, self::LOGIN_LIMIT, self::LOGIN_WINDOW);
-        $allowedByName = $this->rateLimiter->allow('login-user', mb_strtolower(mb_substr($username, 0, 64)), self::LOGIN_LIMIT, self::LOGIN_WINDOW);
-        if (!$allowedByIp || !$allowedByName) {
+        $allowed = $this->rateLimiter->allow('login-ip', $request->rateLimitSubject(), self::LOGIN_LIMIT, self::LOGIN_WINDOW)
+            && $this->rateLimiter->allow('login-user', mb_strtolower(mb_substr($username, 0, 64)), self::LOGIN_LIMIT, self::LOGIN_WINDOW);
+        if (!$allowed) {
             return $this->tooManyAttempts(self::LOGIN_WINDOW);
         }
         $admin = $this->authenticator->verifyPassword($username, $request->postString('password'));

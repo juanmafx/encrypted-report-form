@@ -42,8 +42,18 @@ final class PasswordHasher
 
     public function burnDecoy(#[\SensitiveParameter] string $password): void
     {
-        $this->decoyHash ??= password_hash(random_bytes(32), PASSWORD_ARGON2ID, $this->options());
-        password_verify(substr($password, 0, self::MAX_LENGTH), $this->decoyHash);
+        password_verify(substr($password, 0, self::MAX_LENGTH), $this->decoyHash());
+    }
+
+    public function decoyHash(): string
+    {
+        return $this->decoyHash ??= sprintf(
+            '$argon2id$v=19$m=%d,t=%d,p=1$%s$%s',
+            $this->memoryCost,
+            $this->timeCost,
+            rtrim(base64_encode(random_bytes(16)), '='),
+            rtrim(base64_encode(random_bytes(32)), '='),
+        );
     }
 
     public function needsRehash(string $hash): bool

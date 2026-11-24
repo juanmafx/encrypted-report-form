@@ -41,7 +41,7 @@ final class Application
 
         return self::kernel(
             $config,
-            Database::connect($config->databasePath),
+            Database::connectExisting($config->databasePath),
             new NativeSession($config->cookieSecure),
             $mailer,
             new SystemClock(),

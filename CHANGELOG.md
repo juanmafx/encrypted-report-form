@@ -28,3 +28,8 @@ All notable changes are documented here. The format follows Keep a Changelog, an
 ### Security
 
 - Fixed mail header injection, reflected XSS, missing CSRF protection, and insecure asset loading.
+- Relative database paths resolve from the project root, and paths inside the web root are rejected.
+- Login timing no longer reveals whether a username exists.
+- Rate limits group IPv6 clients by /64, and blocked clients can no longer grow the rate-limit table.
+- The application no longer creates the database, and `db:migrate` enforces owner-only file permissions.
+- Input validation rejects C1 control characters, and responses no longer disclose the PHP version.

@@ -65,7 +65,7 @@ final class ReportValidator
         }
         $value = trim(str_replace("\r\n", "\n", $raw));
         $values[$field] = $value;
-        $forbidden = $multiLine ? '/[\x00-\x08\x0B\x0C\x0D\x0E-\x1F\x7F]/' : '/[\x00-\x1F\x7F]/';
+        $forbidden = $multiLine ? '/[^\P{Cc}\t\n]/u' : '/\p{Cc}/u';
         if (preg_match($forbidden, $value) === 1) {
             $values[$field] = '';
             $errors[$field] = 'Remove control characters.';

@@ -43,4 +43,23 @@ final class AppConfigTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         AppConfig::fromEnvironment($this->environment(['FANG_MAIL_TO' => "a@example.test\r\nBcc: b@example.test"]));
     }
+
+    public function testRelativeDatabasePathResolvesFromProjectRoot(): void
+    {
+        $config = AppConfig::fromEnvironment($this->environment(['FANG_DB_PATH' => 'var/fang.sqlite']));
+
+        self::assertSame(dirname(__DIR__, 3) . '/var/fang.sqlite', $config->databasePath);
+    }
+
+    public function testRejectsDatabasePathInsideTheWebRoot(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        AppConfig::fromEnvironment($this->environment(['FANG_DB_PATH' => 'frontend/public/fang.sqlite']));
+    }
+
+    public function testRejectsDatabasePathTraversingIntoTheWebRoot(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        AppConfig::fromEnvironment($this->environment(['FANG_DB_PATH' => dirname(__DIR__, 3) . '/backend/../frontend/public/fang.sqlite']));
+    }
 }

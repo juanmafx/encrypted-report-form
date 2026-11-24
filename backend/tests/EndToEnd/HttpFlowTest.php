@@ -196,6 +196,14 @@ final class HttpFlowTest extends TestCase
         self::assertStringContainsString('--accent', $response['body']);
     }
 
+    public function testPhpVersionIsNotDisclosed(): void
+    {
+        $response = $this->request('GET', '/');
+
+        self::assertSame(200, $response['status']);
+        self::assertSame([], preg_grep('/^X-Powered-By:/i', $response['headers']));
+    }
+
     public function testBackendSourceIsNotReachableOverHttp(): void
     {
         foreach (['/backend/src/Application.php', '/.env', '/db/schema.sql', '/composer.json'] as $path) {

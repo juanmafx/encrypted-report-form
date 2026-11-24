@@ -15,6 +15,7 @@ use Fang\Security\PasswordHasher;
 use Fang\Security\SystemClock;
 use Fang\Security\TotpService;
 use InvalidArgumentException;
+use RuntimeException;
 
 final class Console
 {
@@ -29,7 +30,7 @@ final class Console
                 'admin:create' => $this->createAdmin((string) ($arguments[2] ?? '')),
                 default => $this->usage(),
             };
-        } catch (InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException | RuntimeException $exception) {
             fwrite(STDERR, $exception->getMessage() . "\n");
 
             return 1;
@@ -54,9 +55,13 @@ final class Console
     {
         $config = AppConfig::fromEnvironment(getenv());
         $previousMask = umask(0077);
-        $pdo = Database::connect($config->databasePath);
-        Database::migrate($pdo, Application::ROOT . '/db/schema.sql');
-        umask($previousMask);
+        try {
+            $pdo = Database::connect($config->databasePath);
+            Database::migrate($pdo, Application::ROOT . '/db/schema.sql');
+            Database::restrictPermissions($config->databasePath);
+        } finally {
+            umask($previousMask);
+        }
         echo "Schema applied.\n";
 
         return 0;
@@ -69,7 +74,7 @@ final class Console
         }
         $config = AppConfig::fromEnvironment(getenv());
         $clock = new SystemClock();
-        $admins = new AdminRepository(Database::connect($config->databasePath), $clock);
+        $admins = new AdminRepository(Database::connectExisting($config->databasePath), $clock);
         if ($admins->findByUsername($username) !== null) {
             throw new InvalidArgumentException('That username already exists.');
         }

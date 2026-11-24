@@ -17,4 +17,4 @@ The original version stored nothing, so there is no data to migrate. Configure t
 
 ## Known limitations
 
-See [SECURITY.md](SECURITY.md). The personal email address from the original code remains in git history until the owner decides otherwise.
+See [SECURITY.md](SECURITY.md). Personal email addresses from the original code and commit metadata remain in git history until the owner decides otherwise.

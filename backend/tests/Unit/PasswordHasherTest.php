@@ -61,4 +61,22 @@ final class PasswordHasherTest extends TestCase
         self::assertTrue((new PasswordHasher(2048, 2))->needsRehash($hash));
         self::assertFalse((new PasswordHasher(1024, 1))->needsRehash($hash));
     }
+
+    public function testDecoyCostsOneVerificationAtConfiguredParameters(): void
+    {
+        $hasher = new PasswordHasher();
+        $start = hrtime(true);
+        $decoy = $hasher->decoyHash();
+        $buildNanoseconds = hrtime(true) - $start;
+        $start = hrtime(true);
+        $matched = password_verify(self::PASSWORD, $decoy);
+        $verifyNanoseconds = hrtime(true) - $start;
+        $info = password_get_info($decoy);
+
+        self::assertFalse($matched);
+        self::assertSame('argon2id', $info['algoName']);
+        self::assertSame(65536, $info['options']['memory_cost']);
+        self::assertSame(3, $info['options']['time_cost']);
+        self::assertLessThan($verifyNanoseconds / 4, $buildNanoseconds);
+    }
 }

@@ -11,7 +11,7 @@ final readonly class AppConfig
     public function __construct(
         #[\SensitiveParameter] public string $masterKey,
         public string $databasePath,
-        public string $mailerDsn,
+        #[\SensitiveParameter] public string $mailerDsn,
         public string $mailFrom,
         public string $mailTo,
         public bool $cookieSecure,
@@ -36,12 +36,36 @@ final readonly class AppConfig
 
         return new self(
             $masterKey,
-            self::required($environment, 'FANG_DB_PATH'),
+            self::databasePath(self::required($environment, 'FANG_DB_PATH')),
             self::required($environment, 'FANG_MAILER_DSN'),
             self::required($environment, 'FANG_MAIL_FROM'),
             self::required($environment, 'FANG_MAIL_TO'),
             ($environment['FANG_COOKIE_SECURE'] ?? 'true') !== 'false',
         );
+    }
+
+    private static function databasePath(string $path): string
+    {
+        if ($path === ':memory:') {
+            return $path;
+        }
+        $root = dirname(__DIR__, 3);
+        $segments = [];
+        foreach (explode('/', str_starts_with($path, '/') ? $path : $root . '/' . $path) as $segment) {
+            if ($segment === '..') {
+                array_pop($segments);
+            } elseif ($segment !== '' && $segment !== '.') {
+                $segments[] = $segment;
+            }
+        }
+        $normalized = '/' . implode('/', $segments);
+        $directory = realpath(dirname($normalized)) ?: dirname($normalized);
+        $webRoot = realpath($root . '/frontend/public') ?: $root . '/frontend/public';
+        if (str_starts_with($directory . '/', $webRoot . '/')) {
+            throw new InvalidArgumentException('FANG_DB_PATH must be outside the web root.');
+        }
+
+        return $normalized;
     }
 
     private static function required(#[\SensitiveParameter] array $environment, string $name): string

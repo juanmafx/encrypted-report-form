@@ -6,7 +6,7 @@ A security-focused PHP contact form: visitors file a report through a public pag
 
 ## Purpose
 
-The form collects a playful "alien abduction" report that asks whether the visitor has seen a lost dog named Fang. The scenario is small on purpose. A contact form handles untrusted input, personal data, email, and privileged access, so it is a compact place to apply those controls correctly.
+The form collects a playful "alien abduction" report that asks whether the visitor has seen a lost dog named Fang. The scenario is small, but a contact form still handles untrusted input, personal data, email, and privileged access, which makes it a compact place to apply those controls.
 
 ## Why this project exists
 
@@ -15,10 +15,10 @@ The 2013 version was a two-page learning exercise. It echoed input without escap
 ## What it does
 
 - Serves a validated report form with CSRF protection and a strict Content Security Policy.
-- Encrypts every free-text and personal field with XChaCha20-Poly1305 before it reaches the database.
+- Encrypts every free-text and personal field with XChaCha20-Poly1305 before it reaches the database. The yes/no Fang answer and the submission timestamp stay in plaintext.
 - Sends a notification containing only a random reference, never submitted data.
 - Provides an admin area to list, read, and delete reports, behind Argon2id passwords and TOTP.
-- Rate limits submissions, password attempts, and TOTP attempts.
+- Rate limits submissions, password attempts, and TOTP attempts, grouping IPv6 clients by /64.
 
 ## Architecture
 
@@ -58,6 +58,8 @@ php backend/bin/fang admin:create site-admin
 php -S 127.0.0.1:8080 -t frontend/public frontend/public/index.php
 ```
 
+`db:migrate` creates the database with owner-only permissions, so run it as the user that runs PHP. The application returns a generic error until the database exists.
+
 `admin:create` reads the password from standard input and prints an `otpauth://` URI once. Add it to an authenticator app and treat it as a secret.
 
 ## Usage guide
@@ -81,7 +83,7 @@ Configuration comes only from environment variables.
 | Variable | Required | Description |
 | --- | --- | --- |
 | `FANG_MASTER_KEY` | Yes | Base64 32-byte key. Losing it makes stored reports unreadable. |
-| `FANG_DB_PATH` | Yes | SQLite database path, outside the web root. |
+| `FANG_DB_PATH` | Yes | SQLite database path. Relative paths resolve from the project root. Paths inside `frontend/public` are rejected. |
 | `FANG_MAILER_DSN` | Yes | Symfony Mailer DSN. `null://null` disables delivery. |
 | `FANG_MAIL_FROM` | Yes | Notification sender. |
 | `FANG_MAIL_TO` | Yes | Notification recipient. |
@@ -106,7 +108,7 @@ Controls, limitations, and the audit are documented in [SECURITY.md](SECURITY.md
 
 ## Attribution
 
-The "Aliens Abducted Me" scenario and the dog named Fang come from *Head First PHP & MySQL* by Lynn Beighley and Michael Morrison (O'Reilly Media, 2008). The original version of this repository follows that exercise. The scenario remains the work of its authors. Third-party libraries are listed in `composer.json` and keep their own licenses.
+The "Aliens Abducted Me" scenario and the dog named Fang come from *Head First PHP & MySQL* by Lynn Beighley and Michael Morrison (O'Reilly Media, 2008). The original 2013 code did not name its source; this credit was identified from its content, which follows that exercise. The scenario remains the work of its authors. Third-party libraries are listed in `composer.json` and keep their own licenses.
 
 ## License
 

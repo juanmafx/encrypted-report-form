@@ -7,6 +7,7 @@ if (PHP_SAPI === 'cli-server' && ($_SERVER['REQUEST_URI'] ?? '') === '/assets/ap
 }
 
 ini_set('display_errors', '0');
+header_remove('X-Powered-By');
 
 require __DIR__ . '/../../vendor/autoload.php';
 

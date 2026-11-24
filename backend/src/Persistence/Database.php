@@ -26,6 +26,24 @@ final class Database
         return $pdo;
     }
 
+    public static function connectExisting(string $path): PDO
+    {
+        if ($path !== ':memory:' && !is_file($path)) {
+            throw new RuntimeException('Database is not initialized. Run db:migrate first.');
+        }
+
+        return self::connect($path);
+    }
+
+    public static function restrictPermissions(string $path): void
+    {
+        foreach (['', '-wal', '-shm'] as $suffix) {
+            if (is_file($path . $suffix) && !chmod($path . $suffix, 0600)) {
+                throw new RuntimeException('Database file permissions could not be restricted.');
+            }
+        }
+    }
+
     public static function migrate(PDO $pdo, string $schemaPath): void
     {
         $schema = file_get_contents($schemaPath);

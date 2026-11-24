@@ -60,14 +60,14 @@ db/schema.sql               Database definition
 ## Request flow
 
 1. The front controller builds the kernel from environment variables.
-2. The kernel rejects oversized bodies and unsupported methods, then verifies the CSRF token on every POST.
+2. The kernel rejects requests declaring more than 32 KiB and unsupported methods, then verifies the CSRF token on every POST.
 3. A controller applies rate limits and calls domain services.
 4. Views escape all dynamic output.
 5. The kernel adds security headers to every response.
 
 ## Data protection
 
-A single master key is expanded with the libsodium KDF into separate subkeys for data encryption and rate-limit hashing. Each encrypted value uses a random 192-bit nonce and binds its table, record, and field as associated data, so a ciphertext copied to another row or column fails authentication.
+A single master key is expanded with the libsodium KDF into separate subkeys for data encryption and rate-limit hashing. Each encrypted value uses a random 192-bit nonce and binds its table, record, and field as associated data, so a ciphertext copied to another row or column fails authentication. The yes/no Fang answer and timestamps are stored in plaintext.
 
 ## Authentication flow
 
@@ -79,9 +79,13 @@ Session IDs are regenerated at each step. Accepted TOTP time steps are recorded 
 
 ## Recommended deployment
 
+This topology is a recommendation and has not been exercised end to end. Only the PHP built-in server was run.
+
 - Terminate TLS at Nginx or Caddy and forward to PHP-FPM.
 - Point the document root at `frontend/public`.
-- Store the database in a private directory owned by the PHP user.
+- Store the database in a private directory owned by the PHP user, and run `db:migrate` as that user.
+- Limit request bodies in the web server and in `post_max_size`, because PHP parses them before the application runs.
+- PHP-FPM clears the environment by default (`clear_env`), so pass the `FANG_*` variables through a restricted pool configuration.
 - Inject configuration from a secret manager or a restricted environment file.
 - Back up the database and the master key separately.
 

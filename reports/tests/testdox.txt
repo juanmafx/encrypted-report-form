@@ -8,6 +8,7 @@ Admin Access (Fang\Tests\Integration\AdminAccess)
  [x] Totp code cannot be replayed
  [x] Totp attempts are rate limited
  [x] Login attempts are rate limited
+ [x] Blocked client cannot grow the rate limit table
  [x] Pending two factor expires
  [x] Idle session expires
  [x] Absolute session lifetime is enforced
@@ -23,6 +24,13 @@ App Config (Fang\Tests\Unit\AppConfig)
  [x] Rejects missing key
  [x] Rejects short key
  [x] Rejects invalid recipient
+ [x] Relative database path resolves from project root
+ [x] Rejects database path inside the web root
+ [x] Rejects database path traversing into the web root
+
+Database (Fang\Tests\Unit\Database)
+ [x] Connect existing does not create a missing database
+ [x] Restrict permissions tightens existing files
 
 Data Cipher (Fang\Tests\Unit\DataCipher)
  [x] Round trip preserves plaintext
@@ -36,6 +44,7 @@ Data Cipher (Fang\Tests\Unit\DataCipher)
 Http Flow (Fang\Tests\EndToEnd\HttpFlow)
  [x] Complete submission and admin journey
  [x] Stylesheet is served without reaching the application
+ [x] Php version is not disclosed
  [x] Backend source is not reachable over http
 
 Password Hasher (Fang\Tests\Unit\PasswordHasher)
@@ -46,6 +55,7 @@ Password Hasher (Fang\Tests\Unit\PasswordHasher)
  [x] Rejects short passwords
  [x] Overlong password fails verification
  [x] Detects outdated parameters
+ [x] Decoy costs one verification at configured parameters
 
 Rate Limiter (Fang\Tests\Unit\RateLimiter)
  [x] Blocks after the limit
@@ -66,6 +76,7 @@ Report Submission (Fang\Tests\Integration\ReportSubmission)
  [x] Mail failure does not lose the report
  [x] Sql injection payload is stored as data
  [x] Submissions are rate limited per client
+ [x] Rotating within an ipv 6 prefix does not evade the limit
  [x] Oversized body is rejected
  [x] Unknown route and method are handled
 
@@ -80,12 +91,21 @@ Report Validator (Fang\Tests\Unit\ReportValidator)
  [x] Rejects invalid field with data set "newline in single-line field"
  [x] Rejects invalid field with data set "null byte"
  [x] Rejects invalid field with data set "invalid utf-8"
+ [x] Rejects invalid field with data set "c1 control in single-line field"
+ [x] Rejects invalid field with data set "c1 control in multi-line field"
  [x] Rejects invalid field with data set "oversized comment"
  [x] Rejects invalid field with data set "missing first name"
  [x] Rejects invalid field with data set "unexpected fang value"
  [x] Rejects invalid field with data set "array fang value"
  [x] Keeps newlines in multi line fields
  [x] Counts characters not bytes
+
+Request (Fang\Tests\Unit\Request)
+ [x] Rate limit subject with data set "ipv4 is kept"
+ [x] Rate limit subject with data set "ipv6 is reduced to its /64"
+ [x] Rate limit subject with data set "ipv6 spelling does not matter"
+ [x] Rate limit subject with data set "ipv4-mapped ipv6 maps to ipv4"
+ [x] Rate limit subject with data set "non-address is kept"
 
 Totp Service (Fang\Tests\Unit\TotpService)
  [x] Matches rfc 6238 vectors with data set "time 59"

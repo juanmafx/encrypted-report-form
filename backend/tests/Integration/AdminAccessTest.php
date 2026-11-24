@@ -118,6 +118,21 @@ final class AdminAccessTest extends TestCase
         self::assertSame(429, $this->submitPassword());
     }
 
+    public function testBlockedClientCannotGrowTheRateLimitTable(): void
+    {
+        $token = $this->app->csrfToken();
+        for ($attempt = 0; $attempt < 10; ++$attempt) {
+            $this->app->post('/admin/login', ['csrf_token' => $token, 'username' => 'probe', 'password' => 'wrong password value']);
+        }
+        $before = (int) $this->app->pdo->query('SELECT count(*) FROM rate_limit_buckets')->fetchColumn();
+        for ($attempt = 0; $attempt < 25; ++$attempt) {
+            $blocked = $this->app->post('/admin/login', ['csrf_token' => $token, 'username' => 'probe' . $attempt, 'password' => 'wrong password value']);
+            self::assertSame(429, $blocked->status);
+        }
+
+        self::assertSame($before, (int) $this->app->pdo->query('SELECT count(*) FROM rate_limit_buckets')->fetchColumn());
+    }
+
     public function testPendingTwoFactorExpires(): void
     {
         $this->submitPassword();

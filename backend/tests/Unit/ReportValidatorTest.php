@@ -39,6 +39,8 @@ final class ReportValidatorTest extends TestCase
             'newline in single-line field' => ['last_name', "Love\nlace"],
             'null byte' => ['comments', "before\0after"],
             'invalid utf-8' => ['comments', "\xC3\x28"],
+            'c1 control in single-line field' => ['first_name', "Ada\u{0085}Lovelace"],
+            'c1 control in multi-line field' => ['comments', "before\u{009B}after"],
             'oversized comment' => ['comments', str_repeat('x', 2001)],
             'missing first name' => ['first_name', ''],
             'unexpected fang value' => ['fang_spotted', 'maybe'],

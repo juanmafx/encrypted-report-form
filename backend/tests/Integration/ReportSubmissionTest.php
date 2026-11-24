@@ -155,6 +155,19 @@ final class ReportSubmissionTest extends TestCase
         self::assertSame(303, $this->app->postWithToken('/reports', AppHarness::validReport(), '203.0.113.99')->status);
     }
 
+    public function testRotatingWithinAnIpv6PrefixDoesNotEvadeTheLimit(): void
+    {
+        $token = $this->app->csrfToken();
+        for ($host = 1; $host <= 10; ++$host) {
+            $accepted = $this->app->post('/reports', [...AppHarness::validReport(), 'csrf_token' => $token], '2001:db8:1:1::' . dechex($host));
+            self::assertSame(303, $accepted->status);
+        }
+
+        $blocked = $this->app->post('/reports', [...AppHarness::validReport(), 'csrf_token' => $token], '2001:db8:1:1:ffff::1');
+
+        self::assertSame(429, $blocked->status);
+    }
+
     public function testOversizedBodyIsRejected(): void
     {
         $response = $this->app->kernel->handle(new \Fang\Http\Request('POST', '/reports', [], '203.0.113.10', 40000));

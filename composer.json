@@ -3,7 +3,6 @@
     "description": "Hardened PHP contact form with an encrypted submission store and a TOTP-protected admin area.",
     "type": "project",
     "version": "1.0.0",
-    "license": "proprietary",
     "require": {
         "php": ">=8.4 <8.6",
         "ext-mbstring": "*",

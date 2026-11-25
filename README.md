@@ -1,4 +1,4 @@
-# Fang
+# encrypted-report-form
 
 A security-focused PHP contact form: visitors file a report through a public page, submissions are encrypted before storage, and a small admin area protected by a password and TOTP two-factor authentication reads them.
 
